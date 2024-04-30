@@ -23,7 +23,19 @@ Creat an RESTful endpoint for fetching all the ideas
 '''
 @app.get("/ideaapp/api/v1/ideas")
 def get_all_ideas():
-    #Logic to fetch all the ideas
+    
+    # read the query params
+    idea_author =request.args.get('idea_author')
+    
+    if(idea_author):
+        # filter ideas created by these user
+        idea_res ={}
+        for key,value in ideas.items():
+            if(value["idea_author"] == idea_author):
+                idea_res[key] =value
+                
+        return idea_res 
+    #Logic to fetch all the ideas and support query params 
     return ideas
 
 
@@ -53,16 +65,49 @@ def create_idea():
         return "Some internal server error", 500
 
 '''
-Creat an RESTful endpoint for fetching all the ideas
+Endpoint to fetch idea based on idea id
 '''
+@app.get("/ideaapp/api/v1/ideas/<idea_id>")
+def get_idea_id(idea_id):
+    try:
+        if(int(idea_id) in ideas):
+            return ideas[int(idea_id)],200
+    
+        else:
+            return"ideas id is not present",400
+        
+    except:
+        return "some internal error happend",500
+    
 
-
-
-
-
-
-
-
+"""
+Endpoint update idea
+"""        
+@app.put("/ideaapp/api/v1/ideas/<idea_id>")
+def update_idea(idea_id) :
+    try:
+        if(int(idea_id) in ideas):
+            ideas[int(idea_id)] =request.get_json()
+            return ideas[int(idea_id)],200
+        else:
+            return "idea id pass not present",400
+    except:
+        return"some internal error happened",500      
+        
+    """
+    Endpoint delete idea
+    """
+@app.delete("/ideaapp/api/v1/ideas/<idea_id>")
+def delete_idea(idea_id):
+    try:
+        if(int(idea_id) in ideas):
+            ideas.pop(int(idea_id))
+            return"Idea got delete successfully"
+        else:
+            return"Idea id is passed is not present",400
+    except :
+        return"some internal error happened",500
+    
 
     
     
